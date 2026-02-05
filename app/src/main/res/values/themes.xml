@@ -2,6 +2,7 @@
 <resources>
 
     <style name="Theme.UniFoodApp" parent="android:Theme.Material.Light.NoActionBar" />
+
     <style name="SplashTheme" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/white</item>
         <item name="postSplashScreenTheme">@style/Theme.UniFoodApp</item>
