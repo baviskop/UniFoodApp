@@ -1,4 +1,11 @@
 <resources>
     <string name="app_name">UniFoodApp</string>
     <string name="skip">Skip</string>
+    <string name="welcome">Welcome to</string>
+    <string name="unifood_desc">Your favorite food delivered fast at your door.</string>
+    <string name="already_have_account">Already have an account? Sign in</string>
+    <string name="sign_with_email">Start with email or phone</string>
+    <string name="sign_with_google">GOOGLE</string>
+    <string name="sign_with_facebook">FACEBOOK</string>
+    <string name="sign_in_title">sign in with</string>
 </resources>
