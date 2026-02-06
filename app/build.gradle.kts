@@ -58,5 +58,9 @@ dependencies {
     implementation(libs.core.splashscreen)
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.logging.interceptor)
+
 }
 
