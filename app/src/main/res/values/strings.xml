@@ -8,4 +8,5 @@
     <string name="sign_with_google">GOOGLE</string>
     <string name="sign_with_facebook">FACEBOOK</string>
     <string name="sign_in_title">sign in with</string>
+    <string name="sign_in_with">Sign in with</string>
 </resources>
