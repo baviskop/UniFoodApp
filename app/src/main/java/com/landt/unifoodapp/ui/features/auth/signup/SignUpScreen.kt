@@ -34,13 +34,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.landt.unifoodapp.R
 import com.landt.unifoodapp.ui.GroupSocialButtons
 import com.landt.unifoodapp.ui.UniFoodTextField
 import com.landt.unifoodapp.ui.theme.Orange
 
 @Composable
-fun SignUpScreen() {
+fun SignUpScreen(viewModel: SignUpViewModel = hiltViewModel()) {
     Box(modifier = Modifier.fillMaxSize()) {
         var name by remember {
             mutableStateOf("")
