@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.landt.unifoodapp.R
@@ -138,20 +139,27 @@ fun UniFoodTextField(
     maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
     minLines: Int = 1,
     interactionSource: MutableInteractionSource? = null,
-    shape: Shape = OutlinedTextFieldDefaults.shape,
+    shape: Shape = RoundedCornerShape(10.dp),
     colors: TextFieldColors = OutlinedTextFieldDefaults.colors().copy(
         focusedIndicatorColor = Orange,
         unfocusedIndicatorColor = Color.LightGray.copy(alpha = 0.4f),
     )
 ) {
-    Column {
+    Column(Modifier.padding(vertical = 8.dp)) {
+        label?.let {
+            Row() {
+                Spacer(modifier = Modifier.size(4.dp))
+                it()
+            }
+        }
+        Spacer(modifier = Modifier.size(8.dp))
         OutlinedTextField(
             value = value,
             onValueChange,
             modifier,
             enabled,
             readOnly,
-            textStyle,
+            textStyle.copy(fontWeight = FontWeight.SemiBold),
             null,
             placeholder,
             leadingIcon,
