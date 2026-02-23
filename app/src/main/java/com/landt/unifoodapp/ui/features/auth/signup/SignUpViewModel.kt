@@ -1,18 +1,21 @@
 package com.landt.unifoodapp.ui.features.auth.signup
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.landt.unifoodapp.data.FoodApi
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SignUpViewModel @Inject constructor(val foodApi: FoodApi) : ViewModel() {
-    private val _uniState = MutableStateFlow<SignupEvent>(SignupEvent.Nothing)
-    val uniState = _uniState.asStateFlow()
+class SignUpViewModel @Inject constructor(private val foodApi: FoodApi) : ViewModel() {
+    private val _uiState = MutableStateFlow<SignupEvent>(SignupEvent.Nothing)
+    val uiState = _uiState.asStateFlow()
 
     private val _navigationEvent = MutableSharedFlow<SignupNavigationEvent>()
     val navigationEvent = _navigationEvent.asSharedFlow()
@@ -39,9 +42,12 @@ class SignUpViewModel @Inject constructor(val foodApi: FoodApi) : ViewModel() {
     }
 
     fun onSignUpClick() {
-        _uniState.value = SignupEvent.Success
-        _uniState.value = SignupEvent.Loading
-        _navigationEvent.tryEmit(SignupNavigationEvent.NavigateToHome)
+        viewModelScope.launch {
+            _uiState.value = SignupEvent.Loading
+            delay(2000)
+            _uiState.value = SignupEvent.Success
+            _navigationEvent.tryEmit(SignupNavigationEvent.NavigateToHome)
+        }
     }
 
     sealed class SignupNavigationEvent {

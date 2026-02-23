@@ -20,7 +20,7 @@ import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.landt.unifoodapp.data.FoodApi
 import com.landt.unifoodapp.ui.features.auth.AuthScreen
-import com.landt.unifoodapp.ui.features.auth.signup.SignUpScreen
+import com.landt.unifoodapp.ui.features.auth.signup.SignUpRoute
 import com.landt.unifoodapp.ui.theme.UniFoodAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -66,7 +66,7 @@ class MainActivity : ComponentActivity() {
             UniFoodAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
-                        SignUpScreen()
+                        SignUpRoute()
                     }
                 }
             }

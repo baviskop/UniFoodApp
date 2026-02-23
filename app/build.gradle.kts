@@ -62,6 +62,6 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.logging.interceptor)
     implementation(libs.androidx.hilt.navigation.compose)
-
+    implementation(libs.androidx.lifecycle.runtime.compose)
 }
 
