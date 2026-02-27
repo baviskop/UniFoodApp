@@ -1,5 +1,6 @@
 package com.landt.unifoodapp.ui.features.auth.signup
 
+import android.widget.Toast
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -24,6 +25,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -43,9 +46,12 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.landt.unifoodapp.R
 import com.landt.unifoodapp.data.FoodApi
+import com.landt.unifoodapp.data.models.AuthResponse
+import com.landt.unifoodapp.data.models.SignUpRequest
 import com.landt.unifoodapp.ui.GroupSocialButtons
 import com.landt.unifoodapp.ui.UniFoodTextField
 import com.landt.unifoodapp.ui.theme.Orange
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun SignUpScreen(
@@ -73,6 +79,23 @@ fun SignUpScreen(
             else -> {
                 loading.value = false
                 errorMessage.value = null
+            }
+        }
+        val context = LocalContext.current
+        LaunchedEffect(true) {
+            viewModel.navigationEvent.collectLatest { event ->
+                when (event) {
+                    is SignUpViewModel.SignupNavigationEvent.NavigateToHome -> {
+                        Toast.makeText(
+                            context,
+                            "Sign Up Successful",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    else -> {
+
+                    }
+                }
             }
         }
 
@@ -132,6 +155,7 @@ fun SignUpScreen(
                 }
             )
             Spacer(modifier = Modifier.padding(16.dp))
+            Text(text = errorMessage.value ?: "", color = Color.Red)
             Button(
                 onClick = viewModel::onSignUpClick,
                 modifier = Modifier.height(48.dp),
@@ -149,7 +173,10 @@ fun SignUpScreen(
                         }) { target ->
                         if (target) {
                             CircularProgressIndicator(
-                                color = Color.White
+                                color = Color.White,
+                                modifier = Modifier
+                                    .padding(horizontal = 32.dp)
+                                    .size(24.dp)
                             )
                         } else {
                             Text(
@@ -164,8 +191,6 @@ fun SignUpScreen(
             Spacer(
                 modifier = Modifier
                     .size(16.dp)
-                    .fillMaxWidth()
-                    .background(Color.Black)
             )
             Text(
                 text = stringResource(id = R.string.already_have_account),
@@ -185,7 +210,7 @@ fun SignUpScreen(
 @Composable
 fun SignUpRoute(
     viewModel: SignUpViewModel = hiltViewModel()
-){
+) {
     SignUpScreen(viewModel = viewModel)
 }
 
@@ -195,6 +220,7 @@ fun PreviewSignUpScreen() {
     SignUpScreen(
         viewModel = SignUpViewModel(object : FoodApi {
             override suspend fun getFood(): List<String> = emptyList()
+            override suspend fun signUp(request: SignUpRequest): AuthResponse = AuthResponse("token")
         })
     )
 }
