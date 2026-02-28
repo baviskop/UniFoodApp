@@ -30,19 +30,24 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.landt.unifoodapp.R
 import com.landt.unifoodapp.ui.GroupSocialButtons
+import com.landt.unifoodapp.ui.navigation.Login
+import com.landt.unifoodapp.ui.navigation.SignUp
 import com.landt.unifoodapp.ui.theme.Orange
 
 
 @Composable
-fun AuthScreen() {
+fun AuthScreen(navController: NavController) {
     val imageSize = remember {
         mutableStateOf(IntSize.Zero)
     }
@@ -100,7 +105,9 @@ fun AuthScreen() {
             GroupSocialButtons(onFacebookClick = {}) { }
             Spacer(modifier = Modifier.height(20.dp))
             Button(
-                onClick = {},
+                onClick = {
+                    navController.navigate(SignUp)
+                },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Gray.copy(alpha = 0.2f)),
                 shape = RoundedCornerShape(32.dp),
@@ -109,7 +116,9 @@ fun AuthScreen() {
                 Text(text = stringResource(id = R.string.sign_with_email), color = Color.White)
             }
 
-            TextButton(onClick = {}) {
+            TextButton(onClick = {
+                navController.navigate(Login)
+            }) {
                 Text(text = stringResource(id = R.string.already_have_account), color = Color.White)
             }
         }
@@ -119,5 +128,5 @@ fun AuthScreen() {
 @Preview(showBackground = true)
 @Composable
 fun AuthScreenPreview() {
-    AuthScreen()
+    AuthScreen(rememberNavController())
 }
