@@ -25,6 +25,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.landt.unifoodapp.data.FoodApi
 import com.landt.unifoodapp.ui.features.auth.AuthScreen
+import com.landt.unifoodapp.ui.features.auth.signin.SignInRoute
 import com.landt.unifoodapp.ui.features.auth.signup.SignUpRoute
 import com.landt.unifoodapp.ui.features.auth.signup.SignUpScreen
 import com.landt.unifoodapp.ui.navigation.AuthScreen
@@ -91,9 +92,7 @@ class MainActivity : ComponentActivity() {
                             AuthScreen(navController)
                         }
                         composable<Login> {
-                            Box(modifier = Modifier
-                                .fillMaxSize()
-                                .background(Color.Green))
+                            SignInRoute()
                         }
                         composable<Home> {
                             Box(modifier = Modifier

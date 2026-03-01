@@ -4,6 +4,7 @@
     <string name="welcome">Welcome to</string>
     <string name="unifood_desc">Your favorite food delivered fast at your door.</string>
     <string name="already_have_account">Already have an account? Sign in</string>
+    <string name="dont_have_account">Dont have an account? Sign up</string>
     <string name="sign_with_email">Start with email or phone</string>
     <string name="sign_with_google">GOOGLE</string>
     <string name="sign_with_facebook">FACEBOOK</string>
@@ -13,4 +14,5 @@
     <string name="password">Password</string>
     <string name="email">E-mail</string>
     <string name="fullName">Full name</string>
+    <string name="sign_in">Sign in</string>
 </resources>
