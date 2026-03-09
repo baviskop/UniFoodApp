@@ -209,12 +209,12 @@ fun SignInScreen(
 
 @Composable
 fun SignInRoute(
+    navController: NavController,
     viewModel: SignInViewModel = hiltViewModel()
 ) {
     SignInScreen(
-        rememberNavController(),
-        viewModel = viewModel
-    )
+        navController = navController,
+        viewModel = viewModel)
 }
 
 @SuppressLint("ViewModelConstructorInComposable")

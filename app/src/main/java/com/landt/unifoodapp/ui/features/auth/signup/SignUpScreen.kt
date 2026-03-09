@@ -219,10 +219,11 @@ fun SignUpScreen(
 
 @Composable
 fun SignUpRoute(
+    navController: NavController,
     viewModel: SignUpViewModel = hiltViewModel()
 ) {
     SignUpScreen(
-        rememberNavController(),
+        navController = navController,
         viewModel = viewModel
     )
 }

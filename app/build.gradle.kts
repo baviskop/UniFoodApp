@@ -66,5 +66,9 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
+//    09/03/2026
+    implementation("androidx.credentials:credentials:1.5.0")
+    implementation("androidx.credentials:credentials-play-services:1.5.0")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.2.0")
 }
 

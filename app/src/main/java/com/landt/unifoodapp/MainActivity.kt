@@ -115,13 +115,13 @@ class MainActivity : ComponentActivity() {
                         }
                     ) {
                         composable<SignUp> {
-                            SignUpRoute()
+                            SignUpRoute(navController)
                         }
                         composable<AuthScreen> {
                             AuthScreen(navController)
                         }
                         composable<Login> {
-                            SignInRoute()
+                            SignInRoute(navController)
                         }
                         composable<Home> {
                             Box(modifier = Modifier
