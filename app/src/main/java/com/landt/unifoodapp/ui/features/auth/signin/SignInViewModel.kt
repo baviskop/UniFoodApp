@@ -1,8 +1,11 @@
 package com.landt.unifoodapp.ui.features.auth.signin
 
+import android.content.Context
+import androidx.credentials.CredentialManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.landt.unifoodapp.data.FoodApi
+import com.landt.unifoodapp.data.auth.GoogleAuthUIProvider
 import com.landt.unifoodapp.data.models.SignInRequest
 import com.landt.unifoodapp.data.models.SignUpRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,6 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignInViewModel @Inject constructor(private val foodApi: FoodApi) : ViewModel() {
+
+    val googleAuthUIProvider = GoogleAuthUIProvider()
     private val _uiState = MutableStateFlow<SigninEvent>(SigninEvent.Nothing)
     val uiState = _uiState.asStateFlow()
 
@@ -58,7 +63,24 @@ class SignInViewModel @Inject constructor(private val foodApi: FoodApi) : ViewMo
             }
     }
 
-    fun onSignInClicked() {
+    fun onGoogleSignInClick(context: Context) {
+        viewModelScope.launch {
+            _uiState.value = SigninEvent.Loading
+            val response = googleAuthUIProvider.signIn(
+                context,
+                CredentialManager.create(context)
+            )
+
+            if (response!= null) {
+                _uiState.value = SigninEvent.Success
+                _navigationEvent.emit(SigninNavigationEvent.NavigateToHome)
+            }else {
+                _uiState.value = SigninEvent.Error
+            }
+        }
+    }
+
+    fun onSignUpClicked() {
         viewModelScope.launch {
             _navigationEvent.emit(SigninNavigationEvent.NavigateToSignUp)
         }

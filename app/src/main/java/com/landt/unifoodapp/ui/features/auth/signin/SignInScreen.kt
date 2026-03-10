@@ -195,7 +195,7 @@ fun SignInScreen(
                 modifier = Modifier
                     .padding(8.dp)
                     .clickable {
-                        viewModel.onSignInClicked()
+                        viewModel.onSignUpClicked()
                     }
                     .fillMaxWidth(),
                 textAlign = TextAlign.Center
