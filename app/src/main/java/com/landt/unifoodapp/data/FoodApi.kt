@@ -1,6 +1,7 @@
 package com.landt.unifoodapp.data
 
 import com.landt.unifoodapp.data.models.AuthResponse
+import com.landt.unifoodapp.data.models.OAuthRequest
 import com.landt.unifoodapp.data.models.SignInRequest
 import com.landt.unifoodapp.data.models.SignUpRequest
 import retrofit2.http.Body
@@ -17,6 +18,9 @@ interface FoodApi {
 
     @POST("/auth/signin")
     suspend fun signIn(@Body request: SignInRequest): AuthResponse
+
+    @POST("/auth/oauth")
+    suspend fun oAuth(@Body request: OAuthRequest): AuthResponse
     ///Response
 
 }

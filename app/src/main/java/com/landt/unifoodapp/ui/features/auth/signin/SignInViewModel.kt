@@ -1,11 +1,13 @@
 package com.landt.unifoodapp.ui.features.auth.signin
 
 import android.content.Context
+import android.util.Log
 import androidx.credentials.CredentialManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.landt.unifoodapp.data.FoodApi
 import com.landt.unifoodapp.data.auth.GoogleAuthUIProvider
+import com.landt.unifoodapp.data.models.OAuthRequest
 import com.landt.unifoodapp.data.models.SignInRequest
 import com.landt.unifoodapp.data.models.SignUpRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -72,8 +74,18 @@ class SignInViewModel @Inject constructor(private val foodApi: FoodApi) : ViewMo
             )
 
             if (response!= null) {
-                _uiState.value = SigninEvent.Success
-                _navigationEvent.emit(SigninNavigationEvent.NavigateToHome)
+                val request = OAuthRequest(
+                    token = response.token,
+                    provider = "google"
+                )
+                val res = foodApi.oAuth(request)
+                if (res.token.isNotEmpty()) {
+                    Log.d("SignInViewModel", "onGoogleSignInClicked: ${res.token}")
+                    _uiState.value = SigninEvent.Success
+                    _navigationEvent.emit(SigninNavigationEvent.NavigateToHome)
+                }else{
+                    _uiState.value = SigninEvent.Error
+                }
             }else {
                 _uiState.value = SigninEvent.Error
             }

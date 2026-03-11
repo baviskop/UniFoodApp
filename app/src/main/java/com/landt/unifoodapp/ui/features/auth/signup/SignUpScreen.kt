@@ -49,6 +49,7 @@ import androidx.navigation.compose.rememberNavController
 import com.landt.unifoodapp.R
 import com.landt.unifoodapp.data.FoodApi
 import com.landt.unifoodapp.data.models.AuthResponse
+import com.landt.unifoodapp.data.models.OAuthRequest
 import com.landt.unifoodapp.data.models.SignInRequest
 import com.landt.unifoodapp.data.models.SignUpRequest
 import com.landt.unifoodapp.ui.GroupSocialButtons
@@ -237,8 +238,11 @@ fun PreviewSignUpScreen() {
             override suspend fun getFood(): List<String> = emptyList()
             override suspend fun signUp(request: SignUpRequest): AuthResponse =
                 AuthResponse("token")
+
             override suspend fun signIn(request: SignInRequest): AuthResponse =
                 AuthResponse("token")
+
+            override suspend fun oAuth(request: OAuthRequest): AuthResponse = AuthResponse("token")
         })
     )
 }
