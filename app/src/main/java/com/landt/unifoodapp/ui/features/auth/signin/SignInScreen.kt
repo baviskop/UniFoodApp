@@ -1,6 +1,7 @@
 package com.landt.unifoodapp.ui.features.auth.signin
 
 import android.annotation.SuppressLint
+import androidx.activity.ComponentActivity
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -45,6 +46,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.landt.unifoodapp.MainActivity
 import com.landt.unifoodapp.R
 import com.landt.unifoodapp.data.FoodApi
 import com.landt.unifoodapp.data.models.AuthResponse
@@ -203,7 +205,7 @@ fun SignInScreen(
             )
             Spacer(modifier = Modifier.padding(16.dp))
             val context = LocalContext.current
-            GroupSocialButtons(color = Color.Black, onFacebookClick = {})
+            GroupSocialButtons(color = Color.Black, onFacebookClick = {viewModel.onFacebookClicked(context as ComponentActivity)})
             {
                 viewModel.onGoogleSignInClick(context)
             }
