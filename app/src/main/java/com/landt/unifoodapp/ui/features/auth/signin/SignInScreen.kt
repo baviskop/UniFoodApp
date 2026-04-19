@@ -205,10 +205,9 @@ fun SignInScreen(
             )
             Spacer(modifier = Modifier.padding(16.dp))
             val context = LocalContext.current
-            GroupSocialButtons(color = Color.Black, onFacebookClick = {viewModel.onFacebookClicked(context as ComponentActivity)})
-            {
-                viewModel.onGoogleSignInClick(context)
-            }
+            GroupSocialButtons(
+                color = Color.Black,
+                viewModel = viewModel)
         }
     }
 }

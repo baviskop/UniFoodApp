@@ -1,21 +1,9 @@
 package com.landt.unifoodapp.ui.features.auth.signin
 
-import android.app.Activity
-import android.content.Context
-import android.util.Log
-import androidx.activity.ComponentActivity
-import androidx.credentials.CredentialManager
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.facebook.CallbackManager
-import com.facebook.FacebookCallback
-import com.facebook.FacebookException
-import com.facebook.login.LoginManager
-import com.facebook.login.LoginResult
 import com.landt.unifoodapp.data.FoodApi
-import com.landt.unifoodapp.data.auth.GoogleAuthUIProvider
-import com.landt.unifoodapp.data.models.OAuthRequest
 import com.landt.unifoodapp.data.models.SignInRequest
+import com.landt.unifoodapp.ui.features.auth.BaseAuthViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,10 +14,9 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class SignInViewModel @Inject constructor(val foodApi: FoodApi) : ViewModel() {
+class SignInViewModel @Inject constructor(override val foodApi: FoodApi) : BaseAuthViewModel(foodApi) {
 
-    val googleAuthUIProvider = GoogleAuthUIProvider()
-    lateinit var callbackManager: CallbackManager
+
     private val _uiState = MutableStateFlow<SigninEvent>(SigninEvent.Nothing)
     val uiState = _uiState.asStateFlow()
 
@@ -72,80 +59,10 @@ class SignInViewModel @Inject constructor(val foodApi: FoodApi) : ViewModel() {
             }
     }
 
-    fun onGoogleSignInClick(context: Context) {
-        viewModelScope.launch {
-            _uiState.value = SigninEvent.Loading
-            val response = googleAuthUIProvider.signIn(
-                context,
-                CredentialManager.create(context)
-            )
-
-            if (response!= null) {
-                val request = OAuthRequest(
-                    token = response.token,
-                    provider = "google"
-                )
-                val res = foodApi.oAuth(request)
-                if (res.token.isNotEmpty()) {
-                    Log.d("SignInViewModel", "onGoogleSignInClicked: ${res.token}")
-                    _uiState.value = SigninEvent.Success
-                    _navigationEvent.emit(SigninNavigationEvent.NavigateToHome)
-                }else{
-                    _uiState.value = SigninEvent.Error
-                }
-            }else {
-                _uiState.value = SigninEvent.Error
-            }
-        }
-    }
-
     fun onSignUpClicked() {
         viewModelScope.launch {
             _navigationEvent.emit(SigninNavigationEvent.NavigateToSignUp)
         }
-    }
-
-    fun onFacebookClicked(context: ComponentActivity) {
-        initiateFacebookLogin(context)
-    }
-
-    private fun initiateFacebookLogin(context: ComponentActivity) {
-        _uiState.value = SigninEvent.Loading
-        callbackManager = CallbackManager.Factory.create()
-        LoginManager.getInstance().registerCallback(
-            callbackManager,
-            object : FacebookCallback<LoginResult> {
-                override fun onSuccess(result: LoginResult) {
-                    viewModelScope.launch {
-                        val request = OAuthRequest(
-                            token = result.accessToken.token,
-                            provider = "facebook"
-                        )
-                        val res = foodApi.oAuth(request)
-                        if (res.token.isNotEmpty()) {
-                            _uiState.value = SigninEvent.Success
-                            _navigationEvent.emit(SigninNavigationEvent.NavigateToHome)
-                        }else{
-                            _uiState.value = SigninEvent.Error
-                        }
-                    }
-                }
-
-                override fun onCancel() {
-                    // App code
-                    _uiState.value = SigninEvent.Error
-                }
-
-                override fun onError(error: FacebookException) {
-                    // App code
-                    _uiState.value = SigninEvent.Error
-                }
-            })
-        LoginManager.getInstance().logInWithReadPermissions(
-            context,
-            callbackManager,
-            listOf("public_profile", "email")
-        )
     }
 
     sealed class SigninNavigationEvent {
@@ -158,5 +75,30 @@ class SignInViewModel @Inject constructor(val foodApi: FoodApi) : ViewModel() {
         object Success : SigninEvent()
         object Error : SigninEvent()
         object Loading : SigninEvent()
+    }
+
+    override fun loading() {
+        viewModelScope.launch {
+            _uiState.value = SigninEvent.Loading
+        }
+    }
+
+    override fun onGoogleError(msg: String) {
+        viewModelScope.launch {
+            _uiState.value = SigninEvent.Error
+        }
+    }
+
+    override fun onFacebookError(msg: String) {
+        viewModelScope.launch {
+            _uiState.value = SigninEvent.Error
+        }
+    }
+
+    override fun onSocialLoginSuccess(token: String) {
+        viewModelScope.launch {
+            _uiState.value = SigninEvent.Success
+            _navigationEvent.emit(SigninNavigationEvent.NavigateToHome)
+        }
     }
 }

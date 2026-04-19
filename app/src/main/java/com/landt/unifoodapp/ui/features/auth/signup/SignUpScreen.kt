@@ -212,8 +212,7 @@ fun SignUpScreen(
                 textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.padding(16.dp))
-            GroupSocialButtons(color = Color.Black, onFacebookClick = {})
-            { }
+            GroupSocialButtons(color = Color.Black, viewModel)
         }
     }
 }
