@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.landt.unifoodapp.data.FoodApi
 import com.landt.unifoodapp.data.models.SignUpRequest
+import com.landt.unifoodapp.ui.features.auth.AuthScreenViewModel.AuthEvent
 import com.landt.unifoodapp.ui.features.auth.BaseAuthViewModel
 import com.landt.unifoodapp.ui.features.auth.signin.SignInViewModel.SigninEvent
 import com.landt.unifoodapp.ui.features.auth.signin.SignInViewModel.SigninNavigationEvent
@@ -55,7 +56,7 @@ class SignUpViewModel @Inject constructor(override val foodApi: FoodApi) : BaseA
                         email = email.value,
                         password = password.value)
                 )
-                if (response.token.isNotEmpty()) {
+                if (response.body()?.token?.isNotEmpty()==true) {
                     _uiState.value = SignupEvent.Success
                     _navigationEvent.emit(SignupNavigationEvent.NavigateToHome)
                 }
@@ -81,12 +82,16 @@ class SignUpViewModel @Inject constructor(override val foodApi: FoodApi) : BaseA
 
     override fun onGoogleError(msg: String) {
         viewModelScope.launch {
+            errorDescription=msg
+            error="Google Sign In Failed"
             _uiState.value = SignupEvent.Error
         }
     }
 
     override fun onFacebookError(msg: String) {
         viewModelScope.launch {
+            errorDescription=msg
+            error="Facebook Sign In Failed"
             _uiState.value = SignupEvent.Error
         }
     }

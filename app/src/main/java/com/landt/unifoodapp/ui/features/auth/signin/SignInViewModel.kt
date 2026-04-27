@@ -47,7 +47,7 @@ class SignInViewModel @Inject constructor(override val foodApi: FoodApi) : BaseA
                         email = email.value,
                         password = password.value)
                 )
-                if (response.token.isNotEmpty()) {
+                if (response.body()?.token?.isNotEmpty()==true) {
                     _uiState.value = SigninEvent.Success
                     _navigationEvent.emit(SigninNavigationEvent.NavigateToHome)
                 }
@@ -85,12 +85,16 @@ class SignInViewModel @Inject constructor(override val foodApi: FoodApi) : BaseA
 
     override fun onGoogleError(msg: String) {
         viewModelScope.launch {
+            errorDescription = msg
+            error = "Google Sign In Failed"
             _uiState.value = SigninEvent.Error
         }
     }
 
     override fun onFacebookError(msg: String) {
-        viewModelScope.launch {
+        viewModelScope.launch{
+            errorDescription = msg
+            error = "Facebook Sign In Failed"
             _uiState.value = SigninEvent.Error
         }
     }

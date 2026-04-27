@@ -17,6 +17,7 @@ class GoogleAuthUIProvider {
         activityContext: Context,
         credentialManager: CredentialManager
     ): GoogleAccount {
+
         val creds = credentialManager.getCredential(
             activityContext,
             getCredentialRequest()

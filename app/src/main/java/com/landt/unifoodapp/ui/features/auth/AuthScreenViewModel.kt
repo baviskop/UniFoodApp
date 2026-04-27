@@ -42,12 +42,16 @@ class AuthScreenViewModel @Inject constructor(override val foodApi: FoodApi) : B
 
     override fun onGoogleError(msg: String) {
         viewModelScope.launch {
+            errorDescription=msg
+            error="Google Sign In Failed"
             _uiState.value = AuthEvent.Error
         }
     }
 
     override fun onFacebookError(msg: String) {
         viewModelScope.launch {
+            errorDescription=msg
+            error="Facebook Sign In Failed"
             _uiState.value = AuthEvent.Error
         }
     }
