@@ -3,6 +3,7 @@ package com.landt.unifoodapp.ui.features.auth.signup
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.landt.unifoodapp.data.FoodApi
+import com.landt.unifoodapp.data.UniFoodSession
 import com.landt.unifoodapp.data.models.SignUpRequest
 import com.landt.unifoodapp.data.remote.ApiResponse
 import com.landt.unifoodapp.data.remote.safeApiCall
@@ -20,7 +21,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SignUpViewModel @Inject constructor(override val foodApi: FoodApi) : BaseAuthViewModel(foodApi) {
+class SignUpViewModel @Inject constructor(override val foodApi: FoodApi, val session: UniFoodSession) : BaseAuthViewModel(foodApi) {
     private val _uiState = MutableStateFlow<SignupEvent>(SignupEvent.Nothing)
     val uiState = _uiState.asStateFlow()
 
@@ -63,6 +64,7 @@ class SignUpViewModel @Inject constructor(override val foodApi: FoodApi) : BaseA
                 when (response) {
                     is ApiResponse.Success -> {
                         _uiState.value = SignupEvent.Success
+                        session.storeToken(response.data.token)
                         _navigationEvent.emit(SignupNavigationEvent.NavigateToHome)
                     }
                     else -> {
@@ -104,7 +106,6 @@ class SignUpViewModel @Inject constructor(override val foodApi: FoodApi) : BaseA
             errorDescription=msg
             error="Google Sign In Failed"
             _uiState.value = SignupEvent.Error
-            _navigationEvent.emit(SignupNavigationEvent.NavigateToHome)
         }
     }
 
@@ -112,13 +113,13 @@ class SignUpViewModel @Inject constructor(override val foodApi: FoodApi) : BaseA
         viewModelScope.launch {
             errorDescription=msg
             error="Facebook Sign In Failed"
-            _navigationEvent.emit(SignupNavigationEvent.NavigateToHome)
             _uiState.value = SignupEvent.Error
         }
     }
 
     override fun onSocialLoginSuccess(token: String) {
         viewModelScope.launch {
+            session.storeToken(token)
             _uiState.value = SignupEvent.Success
             _navigationEvent.emit(SignupNavigationEvent.NavigateToHome)
         }

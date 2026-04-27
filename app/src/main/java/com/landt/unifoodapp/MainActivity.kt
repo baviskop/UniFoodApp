@@ -29,10 +29,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.landt.unifoodapp.data.FoodApi
+import com.landt.unifoodapp.data.UniFoodSession
 import com.landt.unifoodapp.ui.features.auth.AuthScreen
 import com.landt.unifoodapp.ui.features.auth.signin.SignInRoute
 import com.landt.unifoodapp.ui.features.auth.signup.SignUpRoute
 import com.landt.unifoodapp.ui.features.auth.signup.SignUpScreen
+import com.landt.unifoodapp.ui.features.home.HomeScreen
 import com.landt.unifoodapp.ui.navigation.AuthScreen
 import com.landt.unifoodapp.ui.navigation.Home
 import com.landt.unifoodapp.ui.navigation.Login
@@ -51,6 +53,8 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var foodApi: FoodApi
+    @Inject
+    lateinit var session: UniFoodSession
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen().apply {
             setKeepOnScreenCondition {
@@ -87,7 +91,7 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     NavHost(
                         navController = navController,
-                        startDestination = AuthScreen,
+                        startDestination = if (session.getToken() != null) Home else AuthScreen,
                         modifier = Modifier.padding(innerPadding),
                         enterTransition = {
                             slideIntoContainer(
@@ -124,9 +128,7 @@ class MainActivity : ComponentActivity() {
                             SignInRoute(navController)
                         }
                         composable<Home> {
-                            Box(modifier = Modifier
-                                .fillMaxSize()
-                                .background(Color.Red))
+                            HomeScreen(navController)
                         }
                     }
 
