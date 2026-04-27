@@ -59,6 +59,7 @@ import com.landt.unifoodapp.ui.navigation.Home
 import com.landt.unifoodapp.ui.navigation.Login
 import com.landt.unifoodapp.ui.theme.Orange
 import kotlinx.coroutines.flow.collectLatest
+import retrofit2.Response
 
 @Composable
 fun SignUpScreen(
@@ -235,13 +236,13 @@ fun PreviewSignUpScreen() {
         rememberNavController(),
         viewModel = SignUpViewModel(object : FoodApi {
             override suspend fun getFood(): List<String> = emptyList()
-            override suspend fun signUp(request: SignUpRequest): AuthResponse =
-                AuthResponse("token")
+            override suspend fun signUp(request: SignUpRequest): Response<AuthResponse> =
+                Response.success(AuthResponse("token"))
 
-            override suspend fun signIn(request: SignInRequest): AuthResponse =
-                AuthResponse("token")
+            override suspend fun signIn(request: SignInRequest): Response<AuthResponse> =
+                Response.success(AuthResponse("token"))
 
-            override suspend fun oAuth(request: OAuthRequest): AuthResponse = AuthResponse("token")
+            override suspend fun oAuth(request: OAuthRequest): Response<AuthResponse> = Response.success(AuthResponse("token"))
         })
     )
 }

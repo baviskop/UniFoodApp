@@ -24,6 +24,7 @@ class AuthScreenViewModel @Inject constructor(override val foodApi: FoodApi) : B
     sealed class AuthNavigationEvent {
         object NavigateToSignUp : AuthNavigationEvent()
         object NavigateToHome : AuthNavigationEvent()
+        object ShowErrorDialog: AuthNavigationEvent()
     }
 
     sealed class AuthEvent {

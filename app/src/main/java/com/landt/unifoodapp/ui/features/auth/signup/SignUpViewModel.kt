@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.landt.unifoodapp.data.FoodApi
 import com.landt.unifoodapp.data.models.SignUpRequest
+import com.landt.unifoodapp.data.remote.ApiResponse
+import com.landt.unifoodapp.data.remote.safeApiCall
 import com.landt.unifoodapp.ui.features.auth.AuthScreenViewModel.AuthEvent
 import com.landt.unifoodapp.ui.features.auth.BaseAuthViewModel
 import com.landt.unifoodapp.ui.features.auth.signin.SignInViewModel.SigninEvent
@@ -50,16 +52,33 @@ class SignUpViewModel @Inject constructor(override val foodApi: FoodApi) : BaseA
         viewModelScope.launch {
             _uiState.value = SignupEvent.Loading
             try {
-                val response = foodApi.signUp(
-                    SignUpRequest(
-                        name = name.value,
-                        email = email.value,
-                        password = password.value)
-                )
-                if (response.body()?.token?.isNotEmpty()==true) {
-                    _uiState.value = SignupEvent.Success
-                    _navigationEvent.emit(SignupNavigationEvent.NavigateToHome)
+                val response = safeApiCall {
+                    foodApi.signUp(
+                        SignUpRequest(
+                            name = name.value,
+                            email = email.value,
+                            password = password.value)
+                    )
                 }
+                when (response) {
+                    is ApiResponse.Success -> {
+                        _uiState.value = SignupEvent.Success
+                        _navigationEvent.emit(SignupNavigationEvent.NavigateToHome)
+                    }
+                    else -> {
+                        val err = (response as? ApiResponse.Error)?.code ?: 0
+                        error = "Sign In Failed"
+                        errorDescription = "Failed to sign up"
+                        when(err) {
+                            400 -> {
+                                error = "Invalid Credentials"
+                                errorDescription = "Please enter correct details."
+                            }
+                        }
+                        _uiState.value = SignupEvent.Error
+                    }
+                }
+
             }
             catch (e: Exception) {
                 e.printStackTrace()
@@ -85,6 +104,7 @@ class SignUpViewModel @Inject constructor(override val foodApi: FoodApi) : BaseA
             errorDescription=msg
             error="Google Sign In Failed"
             _uiState.value = SignupEvent.Error
+            _navigationEvent.emit(SignupNavigationEvent.NavigateToHome)
         }
     }
 
@@ -92,6 +112,7 @@ class SignUpViewModel @Inject constructor(override val foodApi: FoodApi) : BaseA
         viewModelScope.launch {
             errorDescription=msg
             error="Facebook Sign In Failed"
+            _navigationEvent.emit(SignupNavigationEvent.NavigateToHome)
             _uiState.value = SignupEvent.Error
         }
     }

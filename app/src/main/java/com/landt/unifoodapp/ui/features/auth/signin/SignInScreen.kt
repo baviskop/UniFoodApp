@@ -1,7 +1,6 @@
 package com.landt.unifoodapp.ui.features.auth.signin
 
 import android.annotation.SuppressLint
-import androidx.activity.ComponentActivity
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -46,7 +45,6 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.landt.unifoodapp.MainActivity
 import com.landt.unifoodapp.R
 import com.landt.unifoodapp.data.FoodApi
 import com.landt.unifoodapp.data.models.AuthResponse
@@ -57,10 +55,10 @@ import com.landt.unifoodapp.ui.GroupSocialButtons
 import com.landt.unifoodapp.ui.UniFoodTextField
 import com.landt.unifoodapp.ui.navigation.AuthScreen
 import com.landt.unifoodapp.ui.navigation.Home
-import com.landt.unifoodapp.ui.navigation.Login
 import com.landt.unifoodapp.ui.navigation.SignUp
 import com.landt.unifoodapp.ui.theme.Orange
 import kotlinx.coroutines.flow.collectLatest
+import retrofit2.Response
 
 @Composable
 fun SignInScreen(
@@ -230,13 +228,12 @@ fun PreviewSignInScreen() {
         rememberNavController(),
         viewModel = SignInViewModel(object : FoodApi {
             override suspend fun getFood(): List<String> = emptyList()
-            override suspend fun signUp(request: SignUpRequest): AuthResponse =
-                AuthResponse("token")
-            override suspend fun signIn(request: SignInRequest): AuthResponse =
-                AuthResponse("token")
+            override suspend fun signUp(request: SignUpRequest): Response<AuthResponse> =
+                Response.success(AuthResponse("token"))
+            override suspend fun signIn(request: SignInRequest): Response<AuthResponse> =
+                Response.success(AuthResponse("token"))
 
-            override suspend fun oAuth(request: OAuthRequest): AuthResponse = AuthResponse("token")
-
+            override suspend fun oAuth(request: OAuthRequest): Response<AuthResponse> = Response.success(AuthResponse("token"))
         })
     )
 }

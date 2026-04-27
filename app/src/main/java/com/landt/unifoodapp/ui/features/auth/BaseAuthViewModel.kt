@@ -59,7 +59,7 @@ abstract class BaseAuthViewModel(open val foodApi: FoodApi): ViewModel() {
                 token = token,
                 provider = provider
             )
-            val res = safeApiCall<AuthResponse>{
+            val res = safeApiCall {
                 foodApi.oAuth(request)
             }
             when(res){
@@ -67,7 +67,7 @@ abstract class BaseAuthViewModel(open val foodApi: FoodApi): ViewModel() {
                     onSocialLoginSuccess(res.data.token)
                 }
                 else -> {
-                    val error = (res as ApiResponse.Error)?.code
+                    val error = (res as? ApiResponse.Error)?.code
                     if(error != null){
                         when(error){
                             401-> onError("Invalid token")
