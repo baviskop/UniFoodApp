@@ -41,7 +41,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -50,7 +50,9 @@ import com.landt.unifoodapp.data.FoodApi
 import com.landt.unifoodapp.data.UniFoodSession
 import com.landt.unifoodapp.data.models.CategoriesResponse
 import com.landt.unifoodapp.data.models.AuthResponse
+import com.landt.unifoodapp.data.models.FoodItemResponse
 import com.landt.unifoodapp.data.models.OAuthRequest
+import com.landt.unifoodapp.data.models.ResturauntsResponse
 import com.landt.unifoodapp.data.models.SignInRequest
 import com.landt.unifoodapp.data.models.SignUpRequest
 import com.landt.unifoodapp.ui.GroupSocialButtons
@@ -90,7 +92,7 @@ fun SignInScreen(
                 errorMessage.value = null
             }
         }
-        val context = LocalContext.current
+//        val context = LocalContext.current
         LaunchedEffect(true) {
             viewModel.navigationEvent.collectLatest { event ->
                 when (event) {
@@ -204,7 +206,7 @@ fun SignInScreen(
                 textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.padding(16.dp))
-            val context = LocalContext.current
+//            val context = LocalContext.current
             GroupSocialButtons(
                 color = Color.Black,
                 viewModel = viewModel)
@@ -233,12 +235,16 @@ fun PreviewSignInScreen() {
             foodApi = object : FoodApi {
                 override suspend fun getCategories(): Response<CategoriesResponse> =
                     Response.success(CategoriesResponse(emptyList()))
+                override suspend fun getRestaurants(lat: Double, lon: Double): Response<ResturauntsResponse> =
+                    Response.success(ResturauntsResponse(emptyList()))
                 override suspend fun signUp(request: SignUpRequest): Response<AuthResponse> =
                     Response.success(AuthResponse("token"))
                 override suspend fun signIn(request: SignInRequest): Response<AuthResponse> =
                     Response.success(AuthResponse("token"))
                 override suspend fun oAuth(request: OAuthRequest): Response<AuthResponse> =
                     Response.success(AuthResponse("token"))
+                override suspend fun getFoodItemForRestaurant(restaurantId: String): Response<FoodItemResponse> =
+                    Response.success(FoodItemResponse(emptyList()))
             },
             session = UniFoodSession(context)
         )

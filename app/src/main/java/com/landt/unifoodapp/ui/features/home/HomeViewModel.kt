@@ -8,13 +8,13 @@ import com.landt.unifoodapp.data.models.Restaurant
 import com.landt.unifoodapp.data.remote.ApiResponse
 import com.landt.unifoodapp.data.remote.safeApiCall
 import dagger.hilt.android.lifecycle.HiltViewModel
-import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 
 @HiltViewModel
@@ -77,6 +77,18 @@ class HomeViewModel @Inject constructor(private val foodApi: FoodApi) : ViewMode
         return list
     }
 
+    fun onRestaurantSelected(it: Restaurant) {
+        viewModelScope.launch {
+            _navigationEvent.emit(
+                HomeScreenNavigationEvents.NavigateToDetail(
+                    it.name,
+                    it.imageUrl,
+                    it.id
+                )
+            )
+        }
+    }
+
 
     sealed class HomeScreenState {
         object Loading : HomeScreenState()
@@ -85,6 +97,10 @@ class HomeViewModel @Inject constructor(private val foodApi: FoodApi) : ViewMode
     }
 
     sealed class HomeScreenNavigationEvents {
-        object NavigateToDetail : HomeScreenNavigationEvents()
+        data class NavigateToDetail(
+            val name: String,
+            val imageUrl: String,
+            val restaurantId: String
+        ) : HomeScreenNavigationEvents()
     }
 }

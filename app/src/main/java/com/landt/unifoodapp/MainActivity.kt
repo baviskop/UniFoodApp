@@ -10,6 +10,9 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -28,6 +31,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.landt.unifoodapp.data.FoodApi
 import com.landt.unifoodapp.data.UniFoodSession
 import com.landt.unifoodapp.ui.features.auth.AuthScreen
@@ -35,9 +39,11 @@ import com.landt.unifoodapp.ui.features.auth.signin.SignInRoute
 import com.landt.unifoodapp.ui.features.auth.signup.SignUpRoute
 import com.landt.unifoodapp.ui.features.auth.signup.SignUpScreen
 import com.landt.unifoodapp.ui.features.home.HomeScreen
+import com.landt.unifoodapp.ui.features.restaurant_details.RestaurantDetailsScreen
 import com.landt.unifoodapp.ui.navigation.AuthScreen
 import com.landt.unifoodapp.ui.navigation.Home
 import com.landt.unifoodapp.ui.navigation.Login
+import com.landt.unifoodapp.ui.navigation.RestaurantDetails
 import com.landt.unifoodapp.ui.navigation.SignUp
 import com.landt.unifoodapp.ui.theme.UniFoodAppTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -55,6 +61,7 @@ class MainActivity : ComponentActivity() {
     lateinit var foodApi: FoodApi
     @Inject
     lateinit var session: UniFoodSession
+    @OptIn(ExperimentalSharedTransitionApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen().apply {
             setKeepOnScreenCondition {
@@ -89,46 +96,58 @@ class MainActivity : ComponentActivity() {
             UniFoodAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     val navController = rememberNavController()
-                    NavHost(
-                        navController = navController,
-                        startDestination = if (session.getToken() != null) Home else AuthScreen,
-                        modifier = Modifier.padding(innerPadding),
-                        enterTransition = {
-                            slideIntoContainer(
-                                towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                                animationSpec = tween(300)
-                            ) + fadeIn(animationSpec = tween(300))
-                        },
-                        exitTransition = {
-                            slideOutOfContainer(
-                                towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                                animationSpec = tween(300)
-                            ) + fadeOut(animationSpec = tween(300))
-                        },
-                        popEnterTransition = {
-                            slideIntoContainer(
-                                towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                                animationSpec = tween(300)
-                            ) + fadeIn(animationSpec = tween(300))
-                        },
-                        popExitTransition = {
-                            slideOutOfContainer(
-                                towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                                animationSpec = tween(300)
-                            ) + fadeOut(animationSpec = tween(300))
-                        }
-                    ) {
-                        composable<SignUp> {
-                            SignUpRoute(navController)
-                        }
-                        composable<AuthScreen> {
-                            AuthScreen(navController)
-                        }
-                        composable<Login> {
-                            SignInRoute(navController)
-                        }
-                        composable<Home> {
-                            HomeScreen(navController)
+                    SharedTransitionLayout() {
+                        NavHost(
+                            navController = navController,
+                            startDestination = if (session.getToken() != null) Home else AuthScreen,
+                            modifier = Modifier.padding(innerPadding),
+                            enterTransition = {
+                                slideIntoContainer(
+                                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                                    animationSpec = tween(300)
+                                ) + fadeIn(animationSpec = tween(300))
+                            },
+                            exitTransition = {
+                                slideOutOfContainer(
+                                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                                    animationSpec = tween(300)
+                                ) + fadeOut(animationSpec = tween(300))
+                            },
+                            popEnterTransition = {
+                                slideIntoContainer(
+                                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                                    animationSpec = tween(300)
+                                ) + fadeIn(animationSpec = tween(300))
+                            },
+                            popExitTransition = {
+                                slideOutOfContainer(
+                                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                                    animationSpec = tween(300)
+                                ) + fadeOut(animationSpec = tween(300))
+                            }
+                        ) {
+                            composable<SignUp> {
+                                SignUpRoute(navController)
+                            }
+                            composable<AuthScreen> {
+                                AuthScreen(navController)
+                            }
+                            composable<Login> {
+                                SignInRoute(navController)
+                            }
+                            composable<Home> {
+                                HomeScreen(navController, this)
+                            }
+                            composable<RestaurantDetails> {
+                                val route = it.toRoute<RestaurantDetails>()
+                                RestaurantDetailsScreen(
+                                    navController,
+                                    name = route.restaurantName,
+                                    imageUrl = route.restaurantImageUrl,
+                                    restaurantId = route.restaurantId,
+                                    this
+                                )
+                            }
                         }
                     }
 

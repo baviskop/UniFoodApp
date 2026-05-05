@@ -1,9 +1,11 @@
 package com.landt.unifoodapp.ui.features.home
 
-import androidx.compose.material.icons.Icons.Filled
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,12 +26,12 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.TopStart
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -37,18 +39,41 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.landt.unifoodapp.data.models.Category
 import com.landt.unifoodapp.data.models.Restaurant
+import com.landt.unifoodapp.ui.navigation.RestaurantDetails
 import com.landt.unifoodapp.ui.theme.Orange
 import com.landt.unifoodapp.ui.theme.Typography
+import kotlinx.coroutines.flow.collectLatest
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltViewModel()) {
+fun SharedTransitionScope.HomeScreen(
+    navController: NavController,
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    viewModel: HomeViewModel = hiltViewModel()
+) {
+
+    LaunchedEffect(Unit) {
+        viewModel.navigationEvent.collectLatest {
+            when (it) {
+                is HomeViewModel.HomeScreenNavigationEvents.NavigateToDetail -> {
+                    navController.navigate(RestaurantDetails(it.restaurantId, it.name, it.imageUrl))
+                }
+                else -> {
+
+                }
+
+            }
+        }
+    }
+
     Column(modifier = Modifier.fillMaxSize()) {
         val uiState = viewModel.uiState.collectAsState()
         when (uiState.value) {
@@ -65,8 +90,12 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltView
                 CategoriesList(categories = categories, onCategorySelected = {
                     navController.navigate("category/${it.id}")
                 })
-                RestaurantList(restaurants = viewModel.restaurants, onRestaurantSelected = {
-
+                RestaurantList(
+                    restaurants = viewModel.restaurants,
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    onRestaurantSelected = {
+                    viewModel.onRestaurantSelected(it)
+                    navController.navigate("restaurant/${it.id}")
                 })
             }
 
@@ -85,9 +114,10 @@ fun CategoriesList(categories: List<Category>, onCategorySelected: (Category) ->
 
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun RestaurantList(restaurants: List<Restaurant>, onRestaurantSelected: (Restaurant) -> Unit) {
-    Column() {
+fun SharedTransitionScope.RestaurantList(restaurants: List<Restaurant>,animatedVisibilityScope: AnimatedVisibilityScope, onRestaurantSelected: (Restaurant) -> Unit) {
+    Column {
         Row {
             Text(
                 text = "Popular Restaurants",
@@ -102,13 +132,17 @@ fun RestaurantList(restaurants: List<Restaurant>, onRestaurantSelected: (Restaur
     }
     LazyRow {
         items(restaurants) {
-            RestaurantItem(it, onRestaurantSelected)
+            RestaurantItem(it, animatedVisibilityScope, onRestaurantSelected)
         }
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun RestaurantItem(restaurant: Restaurant, onRestaurantSelected: (Restaurant) -> Unit) {
+fun SharedTransitionScope.RestaurantItem(
+    restaurant: Restaurant,
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    onRestaurantSelected: (Restaurant) -> Unit) {
     Box(
         modifier = Modifier
             .padding(8.dp)
@@ -118,6 +152,7 @@ fun RestaurantItem(restaurant: Restaurant, onRestaurantSelected: (Restaurant) ->
             .background(
                 color = Color.White
             )
+            .clickable { onRestaurantSelected(restaurant) }
             .clip(RoundedCornerShape(16.dp))
     ) {
 
@@ -129,18 +164,25 @@ fun RestaurantItem(restaurant: Restaurant, onRestaurantSelected: (Restaurant) ->
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxSize()
-                    .weight(1f),
+                    .weight(1f)
+                    .sharedElement(
+                        sharedContentState = rememberSharedContentState(key = "image/${restaurant.id}"),
+                        animatedVisibilityScope = animatedVisibilityScope
+                        ),
                 contentScale = ContentScale.Crop
             )
             Column(
                 modifier = Modifier
                     .background(Color.White)
-                    .padding(12.dp)
-                    .clickable { onRestaurantSelected(restaurant) }) {
+                    .padding(12.dp)) {
                 Text(
                     text = restaurant.name,
                     style = Typography.titleMedium,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.sharedElement(
+                        sharedContentState = rememberSharedContentState(key = "title/${restaurant.id}"),
+                        animatedVisibilityScope = animatedVisibilityScope
+                    )
                 )
                 Row() {
                     Row(
@@ -175,7 +217,7 @@ fun RestaurantItem(restaurant: Restaurant, onRestaurantSelected: (Restaurant) ->
                                 .size(12.dp)
                         )
                         Text(
-                            text = "Free Delivery",
+                            text = "20-30 min",
                             style = Typography.bodySmall,
                             color = Color.LightGray
                         )
@@ -250,6 +292,7 @@ fun CategoryItem(category: Category, onCategorySelected: (Category) -> Unit) {
                     ambientColor = Orange,
                     spotColor = Orange
                 )
+//                .clickable { onCategorySelected(category) }
                 .clip(CircleShape),
             contentScale = ContentScale.Inside
         )

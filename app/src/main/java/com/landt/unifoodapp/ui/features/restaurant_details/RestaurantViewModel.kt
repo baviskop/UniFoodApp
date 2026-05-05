@@ -48,17 +48,17 @@ class RestaurantViewModel @Inject constructor(val foodApi: FoodApi): ViewModel()
                                 errorDescription = "The Restaurant was not found"
                             }
                             else -> {
-                                errorMsg = "Erorr"
+                                errorMsg = "Error"
                                 errorDescription = "An error occurred"
                            }
                         }
                         _uiState.value = RestaurantEvent.Error
-                        navigationEvent.emit(RestaurantNavigationEvent.ShowErrorDialog)
+                        _navigationEvent.emit(RestaurantNavigationEvent.ShowErrorDialog)
                     }
                 }
             } catch (e: Exception) {
                 _uiState.value = RestaurantEvent.Error
-                navigationEvent.emit(RestaurantNavigationEvent.ShowErrorDialog)
+                _navigationEvent.emit(RestaurantNavigationEvent.ShowErrorDialog)
             }
         }
     }
