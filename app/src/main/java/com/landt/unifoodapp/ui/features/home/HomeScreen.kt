@@ -95,7 +95,7 @@ fun SharedTransitionScope.HomeScreen(
                     animatedVisibilityScope = animatedVisibilityScope,
                     onRestaurantSelected = {
                     viewModel.onRestaurantSelected(it)
-                    navController.navigate("restaurant/${it.id}")
+//                        navController.navigate("restaurant/${it.id}") #bug in here, command and run
                 })
             }
 
