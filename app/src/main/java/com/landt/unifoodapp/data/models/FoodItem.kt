@@ -1,5 +1,8 @@
 package com.landt.unifoodapp.data.models
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class FoodItem(
     val arModelUrl: String?,
     val createdAt: String,

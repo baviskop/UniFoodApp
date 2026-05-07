@@ -34,17 +34,21 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.landt.unifoodapp.data.FoodApi
 import com.landt.unifoodapp.data.UniFoodSession
+import com.landt.unifoodapp.data.models.FoodItem
 import com.landt.unifoodapp.ui.features.auth.AuthScreen
 import com.landt.unifoodapp.ui.features.auth.signin.SignInRoute
 import com.landt.unifoodapp.ui.features.auth.signup.SignUpRoute
 import com.landt.unifoodapp.ui.features.auth.signup.SignUpScreen
+import com.landt.unifoodapp.ui.features.food_item_details.FoodDetailScreen
 import com.landt.unifoodapp.ui.features.home.HomeScreen
 import com.landt.unifoodapp.ui.features.restaurant_details.RestaurantDetailsScreen
 import com.landt.unifoodapp.ui.navigation.AuthScreen
+import com.landt.unifoodapp.ui.navigation.FoodDetails
 import com.landt.unifoodapp.ui.navigation.Home
 import com.landt.unifoodapp.ui.navigation.Login
 import com.landt.unifoodapp.ui.navigation.RestaurantDetails
 import com.landt.unifoodapp.ui.navigation.SignUp
+import com.landt.unifoodapp.ui.navigation.foodItemNavType
 import com.landt.unifoodapp.ui.theme.UniFoodAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -52,6 +56,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.reflect.typeOf
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -147,6 +152,12 @@ class MainActivity : ComponentActivity() {
                                     restaurantId = route.restaurantId,
                                     this
                                 )
+                            }
+                            composable<FoodDetails>(
+                                typeMap = mapOf(typeOf<FoodItem>() to foodItemNavType)
+                            ){
+                                val route = it.toRoute<FoodDetails>()
+                                FoodDetailScreen(navController, foodItem =  route.foodItem, this)
                             }
                         }
                     }

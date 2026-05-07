@@ -5,6 +5,7 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,6 +45,7 @@ import coil3.compose.AsyncImage
 import com.landt.unifoodapp.R
 import com.landt.unifoodapp.data.models.FoodItem
 import com.landt.unifoodapp.ui.gridItems
+import com.landt.unifoodapp.ui.navigation.FoodDetails
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -66,8 +68,7 @@ fun SharedTransitionScope.RestaurantDetailsScreen(
                 restaurantId = restaurantId,
                 animatedVisibilityScope = animatedVisibilityScope,
                 onBackButton = { navController.popBackStack() },
-                onFavoriteButton = {}
-            )
+                onFavoriteButton = {})
         }
         item {
             RestaurantDetails(
@@ -77,7 +78,7 @@ fun SharedTransitionScope.RestaurantDetailsScreen(
                 restaurantId = restaurantId,
             )
         }
-        when(uiState.value) {
+        when (uiState.value) {
             is RestaurantViewModel.RestaurantEvent.Loading -> {
                 item {
                     Column(
@@ -90,26 +91,30 @@ fun SharedTransitionScope.RestaurantDetailsScreen(
                     }
                 }
             }
+
             is RestaurantViewModel.RestaurantEvent.Success -> {
-                val foodItems = (uiState.value as RestaurantViewModel.RestaurantEvent.Success).foodItems
+                val foodItems =
+                    (uiState.value as RestaurantViewModel.RestaurantEvent.Success).foodItems
                 if (foodItems.isNotEmpty()) {
-                    gridItems(foodItems, 2) {foodItem ->
-                        FoodItemView(foodItem = foodItem)
+                    gridItems(foodItems, 2) { foodItem ->
+                        FoodItemView(foodItem = foodItem, animatedVisibilityScope ){
+                            navController.navigate(FoodDetails(foodItem))
+                        }
                     }
-                }
-                else {
+                } else {
                     item {
                         Text(text = "No food items found")
                     }
                 }
             }
+
             is RestaurantViewModel.RestaurantEvent.Error -> {
                 item {
                     Text(text = "Error")
                 }
             }
 
-            RestaurantViewModel.RestaurantEvent.Nothing -> {  }
+            RestaurantViewModel.RestaurantEvent.Nothing -> {}
         }
     }
 }
@@ -133,10 +138,11 @@ fun SharedTransitionScope.RestaurantDetails(
             style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.sharedElement(
                 sharedContentState = rememberSharedContentState(key = "title/${restaurantId}"),
-                animatedVisibilityScope = animatedVisibilityScope)
+                animatedVisibilityScope = animatedVisibilityScope
+            )
         )
         Spacer(modifier = Modifier.size(8.dp))
-        Row (verticalAlignment = Alignment.CenterVertically){
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
                 imageVector = Icons.Filled.Star,
                 contentDescription = null,
@@ -185,7 +191,9 @@ fun SharedTransitionScope.RestaurantDetailsHeader(
 ) {
     Box(modifier = Modifier.fillMaxWidth()) {
         AsyncImage(
-            model = imageUrl, contentDescription = null, modifier = Modifier
+            model = imageUrl,
+            contentDescription = null,
+            modifier = Modifier
                 .fillMaxWidth()
                 .height(200.dp)
                 .sharedElement(
@@ -198,44 +206,64 @@ fun SharedTransitionScope.RestaurantDetailsHeader(
             contentScale = ContentScale.Crop
         )
 
-        IconButton(onClick = onBackButton, modifier = Modifier
-            .padding(16.dp)
-            .size(48.dp)
-            .align(Alignment.TopStart)
+        IconButton(
+            onClick = onBackButton,
+            modifier = Modifier
+                .padding(16.dp)
+                .size(48.dp)
+                .align(Alignment.TopStart)
         ) {
             Image(painter = painterResource(id = R.drawable.back), contentDescription = null)
         }
-        IconButton(onClick = onFavoriteButton, modifier = Modifier
-            .padding(16.dp)
-            .size(48.dp)
-            .align(Alignment.TopEnd)
+        IconButton(
+            onClick = onFavoriteButton,
+            modifier = Modifier
+                .padding(16.dp)
+                .size(48.dp)
+                .align(Alignment.TopEnd)
         ) {
             Image(painter = painterResource(id = R.drawable.favorite), contentDescription = null)
         }
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun FoodItemView(foodItem: FoodItem) {
-    Column(modifier = Modifier
-        .padding(8.dp)
-        .width(162.dp)
-        .height(216.dp)
-        .shadow(
-            elevation = 16.dp,
-            shape = RoundedCornerShape(16.dp),
-            ambientColor = Color.Gray.copy(alpha = 0.8f),
-            spotColor = Color.Gray.copy(alpha = 0.8f)
-        )
-        .background(Color.White)
-        .clip(RoundedCornerShape(16.dp))) {
-        Box(modifier = Modifier.fillMaxWidth().height(147.dp)) {
-            AsyncImage(model = foodItem.imageUrl, contentDescription = null,
+fun SharedTransitionScope.FoodItemView(foodItem: FoodItem, animatedVisibilityScope: AnimatedVisibilityScope, onClick: (FoodItem) -> Unit) {
+    Column(
+        modifier = Modifier
+            .padding(8.dp)
+            .width(162.dp)
+            .height(216.dp)
+            .shadow(
+                elevation = 16.dp,
+                shape = RoundedCornerShape(16.dp),
+                ambientColor = Color.Gray.copy(alpha = 0.8f),
+                spotColor = Color.Gray.copy(alpha = 0.8f)
+            )
+            .background(Color.White)
+            .clickable { onClick.invoke(foodItem) }
+            .clip(RoundedCornerShape(16.dp))) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(147.dp)
+        ) {
+            AsyncImage(
+                model = foodItem.imageUrl,
+                contentDescription = null,
                 modifier = Modifier
                     .fillMaxSize()
-                    .clip(RoundedCornerShape(16.dp)),
-                contentScale = ContentScale.Crop)
-            Text(text = "$${foodItem.price}", style = MaterialTheme.typography.bodySmall,
+                    .clip(RoundedCornerShape(16.dp))
+                    .sharedElement(
+                        rememberSharedContentState(key = "image/${foodItem.id}"),
+                      animatedVisibilityScope
+                    ),
+                contentScale = ContentScale.Crop
+            )
+            Text(
+                text = "$${foodItem.price}",
+                style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier
                     .padding(8.dp)
                     .clip(RoundedCornerShape(8.dp))
@@ -246,7 +274,8 @@ fun FoodItemView(foodItem: FoodItem) {
             Image(
                 painter = painterResource(id = R.drawable.favorite),
                 contentDescription = null,
-                modifier = Modifier.size(28.dp)
+                modifier = Modifier
+                    .size(28.dp)
                     .clip(CircleShape)
                     .align(Alignment.TopEnd)
             )
@@ -256,7 +285,8 @@ fun FoodItemView(foodItem: FoodItem) {
                     .clip(RoundedCornerShape(16.dp))
                     .padding(horizontal = 8.dp)
                     .background(Color.White),
-                verticalAlignment = Alignment.CenterVertically) {
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Text(
                     text = "4.5", style = MaterialTheme.typography.titleSmall, maxLines = 1
                 )
@@ -281,9 +311,11 @@ fun FoodItemView(foodItem: FoodItem) {
                 .fillMaxWidth()
         ) {
             Text(
-                text = foodItem.name,
-                style = MaterialTheme.typography.bodyMedium,
-                maxLines = 1
+                text = foodItem.name, style = MaterialTheme.typography.bodyMedium, maxLines = 1,
+                modifier = Modifier.sharedElement(
+                   rememberSharedContentState(key = "title/${foodItem.id}"),
+                    animatedVisibilityScope
+                )
             )
             Text(
                 text = "$${foodItem.description}",
