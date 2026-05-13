@@ -51,7 +51,7 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.material3)
-    implementation(libs.androidx.compilercommon)
+//    implementation(libs.androidx.compilercommon)
     implementation(libs.play.services.maps)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -76,7 +76,9 @@ dependencies {
     implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
     implementation("androidx.compose.material:material-icons-extended:1.7.6")
     implementation("androidx.compose.animation:animation:1.7.6")
-    implementation("com.facebook.android:facebook-android-sdk:16.3.0")
+    implementation("com.facebook.android:facebook-android-sdk:16.3.0") {
+        exclude(group = "com.google.guava", module = "guava")
+    }
     implementation("io.coil-kt.coil3:coil-compose:3.0.4")
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.4")
 }

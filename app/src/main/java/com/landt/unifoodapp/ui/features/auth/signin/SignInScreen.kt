@@ -1,6 +1,5 @@
 package com.landt.unifoodapp.ui.features.auth.signin
 
-import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -32,29 +31,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.landt.unifoodapp.R
-import com.landt.unifoodapp.data.FoodApi
-import com.landt.unifoodapp.data.UniFoodSession
-import com.landt.unifoodapp.data.models.CategoriesResponse
-import com.landt.unifoodapp.data.models.AuthResponse
-import com.landt.unifoodapp.data.models.FoodItemResponse
-import com.landt.unifoodapp.data.models.OAuthRequest
-import com.landt.unifoodapp.data.models.ResturauntsResponse
-import com.landt.unifoodapp.data.models.SignInRequest
-import com.landt.unifoodapp.data.models.SignUpRequest
 import com.landt.unifoodapp.ui.GroupSocialButtons
 import com.landt.unifoodapp.ui.UniFoodTextField
 import com.landt.unifoodapp.ui.navigation.AuthScreen
@@ -62,7 +49,6 @@ import com.landt.unifoodapp.ui.navigation.Home
 import com.landt.unifoodapp.ui.navigation.SignUp
 import com.landt.unifoodapp.ui.theme.Orange
 import kotlinx.coroutines.flow.collectLatest
-import retrofit2.Response
 
 @Composable
 fun SignInScreen(
@@ -222,31 +208,4 @@ fun SignInRoute(
     SignInScreen(
         navController = navController,
         viewModel = viewModel)
-}
-
-@SuppressLint("ViewModelConstructorInComposable")
-@Preview(showBackground = true)
-@Composable
-fun PreviewSignInScreen() {
-    val context = LocalContext.current
-    SignInScreen(
-        rememberNavController(),
-        viewModel = SignInViewModel(
-            foodApi = object : FoodApi {
-                override suspend fun getCategories(): Response<CategoriesResponse> =
-                    Response.success(CategoriesResponse(emptyList()))
-                override suspend fun getRestaurants(lat: Double, lon: Double): Response<ResturauntsResponse> =
-                    Response.success(ResturauntsResponse(emptyList()))
-                override suspend fun signUp(request: SignUpRequest): Response<AuthResponse> =
-                    Response.success(AuthResponse("token"))
-                override suspend fun signIn(request: SignInRequest): Response<AuthResponse> =
-                    Response.success(AuthResponse("token"))
-                override suspend fun oAuth(request: OAuthRequest): Response<AuthResponse> =
-                    Response.success(AuthResponse("token"))
-                override suspend fun getFoodItemForRestaurant(restaurantId: String): Response<FoodItemResponse> =
-                    Response.success(FoodItemResponse(emptyList()))
-            },
-            session = UniFoodSession(context)
-        )
-    )
 }
