@@ -1,5 +1,5 @@
 package com.landt.unifoodapp
-
+import com.landt.unifoodapp.ui.navigation.Cart
 import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.util.Log
@@ -8,23 +8,18 @@ import android.view.animation.OvershootInterpolator
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -38,8 +33,10 @@ import com.landt.unifoodapp.data.models.FoodItem
 import com.landt.unifoodapp.ui.features.auth.AuthScreen
 import com.landt.unifoodapp.ui.features.auth.signin.SignInRoute
 import com.landt.unifoodapp.ui.features.auth.signup.SignUpRoute
-import com.landt.unifoodapp.ui.features.auth.signup.SignUpScreen
-import com.landt.unifoodapp.ui.features.food_item_details.FoodDetailScreen
+import com.landt.unifoodapp.ui.features.cart.CartScreen
+import com.landt.unifoodapp.ui.features.cart.CartViewModel
+import com.landt.unifoodapp.ui.features.food_item_details.FoodDetailsScreen
+import com.landt.unifoodapp.ui.features.food_item_details.FoodDetailsViewModel
 import com.landt.unifoodapp.ui.features.home.HomeScreen
 import com.landt.unifoodapp.ui.features.restaurant_details.RestaurantDetailsScreen
 import com.landt.unifoodapp.ui.navigation.AuthScreen
@@ -64,8 +61,10 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var foodApi: FoodApi
+
     @Inject
     lateinit var session: UniFoodSession
+
     @OptIn(ExperimentalSharedTransitionApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen().apply {
@@ -155,9 +154,23 @@ class MainActivity : ComponentActivity() {
                             }
                             composable<FoodDetails>(
                                 typeMap = mapOf(typeOf<FoodItem>() to foodItemNavType)
-                            ){
+                            ) {
                                 val route = it.toRoute<FoodDetails>()
-                                FoodDetailScreen(navController, foodItem =  route.foodItem, this)
+                                FoodDetailsScreen(
+                                    navController,
+                                    foodItem = route.foodItem,
+                                    this,
+                                    onItemAddedToCart = {
+                                        Log.d(
+                                            "MainActivity",
+                                            "Added to cart: ${route.foodItem.name}"
+                                        )
+                                    }
+                                )
+                            }
+                            composable <Cart >() {
+                                CartScreen(navController)
+
                             }
                         }
                     }

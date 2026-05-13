@@ -67,15 +67,15 @@ fun SharedTransitionScope.RestaurantDetailsScreen(
                 imageUrl = imageUrl,
                 restaurantId = restaurantId,
                 animatedVisibilityScope = animatedVisibilityScope,
-                onBackButton = { navController.popBackStack() },
-                onFavoriteButton = {})
+                onBackButton = { navController.popBackStack() }
+            ) {}
         }
         item {
             RestaurantDetails(
                 title = name,
                 description = "Lorem",
-                animatedVisibilityScope = animatedVisibilityScope,
                 restaurantId = restaurantId,
+                animatedVisibilityScope = animatedVisibilityScope,
             )
         }
         when (uiState.value) {
@@ -125,7 +125,7 @@ fun SharedTransitionScope.RestaurantDetailsScreen(
 fun SharedTransitionScope.RestaurantDetails(
     title: String,
     description: String,
-    restaurantId: String,
+    restaurantId: String?,
     animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     Column(
@@ -184,7 +184,7 @@ fun SharedTransitionScope.RestaurantDetails(
 @Composable
 fun SharedTransitionScope.RestaurantDetailsHeader(
     imageUrl: String,
-    restaurantId: String,
+    restaurantId: String?,
     animatedVisibilityScope: AnimatedVisibilityScope,
     onBackButton: () -> Unit,
     onFavoriteButton: () -> Unit
