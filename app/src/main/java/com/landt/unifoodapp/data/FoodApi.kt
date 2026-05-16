@@ -30,6 +30,7 @@ import com.landt.unifoodapp.data.models.RiderDeliveryOrderListResponse
 import com.landt.unifoodapp.data.models.SignInRequest
 import com.landt.unifoodapp.data.models.SignUpRequest
 import com.landt.unifoodapp.data.models.UpdateCartItemRequest
+import com.landt.unifoodapp.data.models.AddressListResponse
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
