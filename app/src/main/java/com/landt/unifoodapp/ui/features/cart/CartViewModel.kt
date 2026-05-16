@@ -32,6 +32,7 @@ class CartViewModel @Inject constructor(val foodApi: FoodApi) : ViewModel() {
     private var cartResponse: CartResponse? = null
     private val _cartItemCount = MutableStateFlow(0)
     val cartItemCount = _cartItemCount.asStateFlow()
+
     private var paymentIntent: PaymentIntentResponse? = null
 
     private val address = MutableStateFlow<Address?>(null)

@@ -1,6 +1,5 @@
 package com.landt.unifoodapp.ui.features.address_list
 
-import android.view.View
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.landt.unifoodapp.data.FoodApi
@@ -52,6 +51,12 @@ class AddressListViewModel @Inject constructor(val foodApi: FoodApi) : ViewModel
     fun onAddAddressClicked() {
         viewModelScope.launch {
             _event.emit(AddressEvent.NavigateToAddAddress)
+        }
+    }
+
+    fun onAddressSelected(address: Address) {
+        viewModelScope.launch {
+            _event.emit(AddressEvent.NavigateBack(address))
         }
     }
 

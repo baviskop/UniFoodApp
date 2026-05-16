@@ -32,6 +32,7 @@ import com.landt.unifoodapp.R
 import com.landt.unifoodapp.ui.features.cart.AddressCard
 import com.landt.unifoodapp.ui.navigation.AddAddress
 import kotlinx.coroutines.flow.collectLatest
+import androidx.compose.runtime.collectAsState
 
 @Composable
 fun AddressListScreen(
@@ -50,12 +51,26 @@ fun AddressListScreen(
                 is AddressListViewModel.AddressEvent.NavigateToAddAddress -> {
                     navController.navigate(AddAddress)
                 }
+                is AddressListViewModel.AddressEvent.NavigateBack -> {
+                    val address = addressEvent.address
+                    navController.previousBackStackEntry?.savedStateHandle?.set("address", address)
+                    navController.popBackStack()
+                }
 
                 else -> {
 
                 }
             }
         }
+    }
+    val isAddressAdded =
+        navController.currentBackStackEntry?.savedStateHandle?.getStateFlow("isAddressAdded", false)
+            ?.collectAsState(false)
+    LaunchedEffect(key1 = isAddressAdded?.value) {
+        if (isAddressAdded?.value == true) {
+            viewModel.getAddress()
+        }
+
     }
     Column(modifier = Modifier.fillMaxSize()) {
         Row(
@@ -105,7 +120,9 @@ fun AddressListScreen(
                         .fillMaxSize()
                 ) {
                     items(addressState.data) { address ->
-                        AddressCard(address = address, onAddressClicked = {})
+                        AddressCard(address = address, onAddressClicked = {
+                            viewModel.onAddressSelected(address)
+                        })
                     }
                 }
             }

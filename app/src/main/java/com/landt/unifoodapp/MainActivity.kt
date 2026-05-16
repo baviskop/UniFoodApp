@@ -41,6 +41,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -77,6 +79,7 @@ import javax.inject.Inject
 import kotlin.reflect.typeOf
 import com.landt.unifoodapp.ui.features.add_address.AddAddressScreen
 import com.landt.unifoodapp.ui.features.address_list.AddressListScreen
+import com.landt.unifoodapp.ui.features.cart.CartViewModel
 import com.landt.unifoodapp.ui.navigation.AddAddress
 import com.landt.unifoodapp.ui.navigation.AddressList
 @AndroidEntryPoint

@@ -1,6 +1,8 @@
 package com.landt.unifoodapp.data
 
 import android.content.Context
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -46,5 +48,9 @@ object NetworkModule {
     @Provides
     fun provideSession(@ApplicationContext context: Context): UniFoodSession {
         return UniFoodSession(context)
+    }
+    @Provides
+    fun provideLocationService(@ApplicationContext context: Context): FusedLocationProviderClient {
+        return LocationServices.getFusedLocationProviderClient(context)
     }
 }
