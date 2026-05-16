@@ -18,5 +18,6 @@
     <string name="facebook_app_id">858679870563050</string>
     <string name="fb_login_protocol_scheme">fb1234</string>
     <string name="facebook_client_token">513e92e3e46c4e307030580ddc3715ea</string>
+    <string name="geoAPI">AIzaSyALZgS_pbKoi7oYS0hF9ayvBDvJy-G7QKw</string>
     <string name="ok">OK</string>
 </resources>
